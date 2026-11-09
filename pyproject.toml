@@ -1,0 +1,47 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "thor-extract"
+version = "0.1.0"
+description = "Feature extraction over THOR datasets, wrapped around the production DomainRadar extractor"
+readme = "README.md"
+requires-python = ">=3.11,<3.13"
+license = { text = "MIT" }
+dependencies = [
+    # Same ranges as the upstream extractor's pyproject (see src/extractor/UPSTREAM.md) —
+    # feature values must not change because of a dependency bump.
+    "pandas>=2.2.2,<3.0.0",
+    "pyarrow>=16.1.0,<17.0.0",
+    "numpy>=1.26,<3",
+    "tldextract>=5.1.2,<6.0.0",
+    "whoisit>=2.7.6,<3.0.0",
+    "python-whois>=0.9.4,<1.0.0",
+    "cryptography>=42.0.5,<43.0.0",
+    "python-dateutil>=2.9.0.post0",
+    "pydantic>=2.8.2,<3.0.0",
+    "beautifulsoup4>=4.12.3,<5.0.0",
+    "lxml>=5.3.1,<6.0.0",
+]
+
+[dependency-groups]
+# `uv sync` installs this group by default; `uv sync --no-dev` gives a clean runtime env.
+dev = ["pytest>=8.0"]
+
+[project.scripts]
+thor-extract = "thor_extract.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/thor_extract", "src/extractor"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src", "tests"]
+markers = ["integration: needs the vendored extractor and its whoisit bootstrap (network)"]
+
+[tool.pyright]
+include = ["src", "tests"]
+extraPaths = ["src"]
+venvPath = "."
+venv = ".venv"
